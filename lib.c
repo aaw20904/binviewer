@@ -58,3 +58,12 @@ void setTextToRed(HANDLE console) {
 void setTextToWhite(HANDLE console) {
 	 SetConsoleTextAttribute(console, 0x0007);
 }
+
+void moveTo(HANDLE console, int x, int y){
+	COORD position = {x, y};
+	setConsoleCursorPosition(console, position);
+}
+
+
+
+

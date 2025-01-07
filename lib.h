@@ -5,3 +5,4 @@ void setTextToGreen(HANDLE console);
 void setTextToMagenta(HANDLE console);
 void setTextToRed(HANDLE console);
 void setTextToWhite(HANDLE console);
+void moveTo(HANDLE console, int x, int y);
