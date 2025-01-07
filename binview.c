@@ -26,12 +26,69 @@ const char symbols []={0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0x
  //screen size 80x25
 
 int main (int argc, char *argv[]) {
+	unsigned char charCode1, charCode2;
 	unsigned char* cPtr = buffer;
+	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+ 
+	 setTextToGreen(consoleHandle);
     convertBinariesIntoBlock(symbols, buffer, 3, 3);
     printf("%s \n", buffer);
-    getchar();
+    ///loop of reading 
+    while(1){
+    	//red the first byte
+    	charCode1 = _getch();
+    	//is the character two-byte?
+    	if (charCode1 == 0 | charCode1 == 224){
+    		//because it is two-bytes symbol: reading the secod part
+			charCode2 = _getch();
+			//what is the special symbol?
+			switch (charCode2) {
+				case 72:
+				// cussor_up
+				   
+				break;
+				case 80:
+					 
+				//cursor_down
+				break;
+				case 75:
+					 
+				//cursor_left
+				break;
+				case 77:
+				 
+				//cursor_right
+				break;
+				case 59:
+					 
+				//F1
+				break;
+				case 60:
+				 
+				//F2
+				break;
+				case 61:
+				 
+				//F3
+				break;
+				case 62:
+					 
+				//F4
+				break;
+				default:	
+				break;
+			} 
+		}
+     
+    	if (charCode1==27) {
+    		//when ESC key
+    	 break;	
+		}
+	}
+    
 	return 0;
 }
+
 
 
  

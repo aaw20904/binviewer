@@ -1,5 +1,5 @@
 
-
+#include <windows.h>
 //author : Andrii Androsowych
 void byteToString (unsigned char sym, char* storage) {
 	unsigned const char mask = 0x80;
@@ -20,6 +20,8 @@ void writeStringOfBinaries (unsigned char* pToBinData, char* outString, int byte
 		byteToString(*pToBinData, outString);
 		//b) increase  string buffer pointer
 		outString = outString + 9;
+		//c) increase pointer to a symbol
+		pToBinData++; 
 	} 
 }
 
@@ -40,4 +42,19 @@ void convertBinariesIntoBlock (unsigned char* pToBinaries, char* outBuffer, int 
 	}
 	
 }
+
+void setTextToGreen(HANDLE console) {
+	 SetConsoleTextAttribute(console, 0x0002);
+}
  
+void setTextToMagenta(HANDLE console) {
+	 SetConsoleTextAttribute(console, 0x0005);
+}
+
+void setTextToRed(HANDLE console) {
+	 SetConsoleTextAttribute(console, 0x0004);
+}
+
+void setTextToWhite(HANDLE console) {
+	 SetConsoleTextAttribute(console, 0x0007);
+}
