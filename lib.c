@@ -43,6 +43,39 @@ void convertBinariesIntoBlock (unsigned char* pToBinaries, char* outBuffer, int 
 	
 }
 
+void plotBinaryBlockOfSymbols (unsigned char* pToBinaries, int bytesToShow, HANDLE console ) {
+	unsigned char string [4096];
+    int wh=0;
+	const int symbolsPerString = 6;
+	int wholeStrings= bytesToShow / symbolsPerString;
+	//a) calculate remainder
+	int remainder = bytesToShow % symbolsPerString;
+	//b)plot whole strings firstly
+		for ( wh=0; wh < wholeStrings; wh++) {
+			//1) plot number
+			setTextToMagenta(console);
+			printf("%d ", wh);
+			setTextToGreen(console);
+			//2)plot string into buffer
+			writeStringOfBinaries(pToBinaries,string,symbolsPerString);
+			//3) add pointer string of length
+			pToBinaries += symbolsPerString;
+			//4)plot a string
+			printf("%s \n",string );
+			//5)clear an array 
+			memset(string, 0, 4000);
+		}
+	//c) plot a reminder :
+	//1)number
+	setTextToMagenta(console);
+			printf("%d ", wh);
+	setTextToGreen(console);
+	//2)plot to a buffer
+	writeStringOfBinaries(pToBinaries, string, remainder);
+	//3) plot it in a console
+	printf("%s \n",string );
+}
+
 void setTextToGreen(HANDLE console) {
 	 SetConsoleTextAttribute(console, 0x0002);
 }
@@ -59,10 +92,7 @@ void setTextToWhite(HANDLE console) {
 	 SetConsoleTextAttribute(console, 0x0007);
 }
 
-void moveTo(HANDLE console, int x, int y){
-	COORD position = {x, y};
-	setConsoleCursorPosition(console, position);
-}
+
 
 
 

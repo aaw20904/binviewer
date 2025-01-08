@@ -30,9 +30,9 @@ int main (int argc, char *argv[]) {
 	unsigned char* cPtr = buffer;
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
  
-	 setTextToGreen(consoleHandle);
+	setTextToGreen(consoleHandle);
     convertBinariesIntoBlock(symbols, buffer, 3, 3);
-    printf("%s \n", buffer);
+    plotBinaryBlockOfSymbols(symbols, 20, consoleHandle);
     ///loop of reading 
     while(1){
     	//red the first byte
