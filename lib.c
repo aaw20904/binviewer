@@ -1,5 +1,6 @@
-
+#include <conio.h>
 #include <windows.h>
+#include <stdio.h>
 //author : Andrii Androsowych
 void byteToString (unsigned char sym, char* storage) {
 	unsigned const char mask = 0x80;
@@ -43,11 +44,14 @@ void convertBinariesIntoBlock (unsigned char* pToBinaries, char* outBuffer, int 
 	
 }
 
-void plotBinaryBlockOfSymbols (unsigned char* pToBinaries, int bytesToShow, HANDLE console ) {
-	unsigned char string [4096];
+void plotBinaryBlockOfSymbols (unsigned char* pToBinaries, int bytesToShow, int startRow, HANDLE console ) {
+	unsigned char string [1024];
     int wh=0;
 	const int symbolsPerString = 6;
 	int wholeStrings= bytesToShow / symbolsPerString;
+	//move to start position
+	COORD crd = {Y:startRow, X:0};
+	SetConsoleCursorPosition(console, crd );
 	//a) calculate remainder
 	int remainder = bytesToShow % symbolsPerString;
 	//b)plot whole strings firstly
@@ -63,7 +67,7 @@ void plotBinaryBlockOfSymbols (unsigned char* pToBinaries, int bytesToShow, HAND
 			//4)plot a string
 			printf("%s \n",string );
 			//5)clear an array 
-			memset(string, 0, 4000);
+			memset(string, 0, 1024);
 		}
 	//c) plot a reminder :
 	//1)number
@@ -75,6 +79,47 @@ void plotBinaryBlockOfSymbols (unsigned char* pToBinaries, int bytesToShow, HAND
 	//3) plot it in a console
 	printf("%s \n",string );
 }
+
+
+int openFilePrompt(FILE** fPointer, int* pFileSize, HANDLE console){
+	//move a cursor into a specific position:
+	char filename [32];
+	COORD crd;
+	crd.X = 1;
+	crd.Y = 1;
+	SetConsoleCursorPosition (console, crd);
+	setTextToMagenta (console);
+	puts ("Enter filename:");
+	setTextToWhite (console);
+	//a)read filename
+	gets (filename);
+	*fPointer = fopen(filename,"rb");
+	if(*fPointer==NULL){
+		//when file not found:
+		SetConsoleCursorPosition (console, crd);
+		setTextToRed (console);
+		puts("************File not found!************ ");
+		setTextToWhite (console);
+		return -1;
+	}
+	//b)read file size
+	fseek(*fPointer,0,SEEK_END);
+	*pFileSize = ftell(*fPointer);
+	fseek(*fPointer,0,SEEK_END);
+	SetConsoleCursorPosition (console, crd);
+	setTextToGreen (console);
+	printf(" %s successfully opened! %d B",filename, *pFileSize );
+	setTextToWhite (console);
+	return 0;
+}
+
+void readAndShowChunk (FILE* fPointer, int chunkSize, int fileLength) {
+  //a) calculate number of chunk
+  int numOfChunk, currPos;
+  currPos = ftell(fPointer);
+  numOfChunk = fileLength / chunkSize;	
+}
+
 
 void setTextToGreen(HANDLE console) {
 	 SetConsoleTextAttribute(console, 0x0002);
