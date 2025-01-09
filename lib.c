@@ -70,20 +70,23 @@ void plotBinaryBlockOfSymbols (unsigned char* pToBinaries, int bytesToShow, int 
 			memset(string, 0, 1024);
 		}
 	//c) plot a reminder :
-	//1)number
-	setTextToMagenta(console);
-			printf("%d ", wh);
-	setTextToGreen(console);
-	//2)plot to a buffer
-	writeStringOfBinaries(pToBinaries, string, remainder);
-	//3) plot it in a console
-	printf("%s \n",string );
+	if(remainder) {
+				//1)number
+		setTextToMagenta(console);
+				printf("%d ", wh);
+		setTextToGreen(console);
+		//2)plot to a buffer
+		writeStringOfBinaries(pToBinaries, string, remainder);
+		//3) plot it in a console
+		printf("%s \n",string );
+	}
+
 }
 
 void plotBinaryBlockOfSymbolsAsString (unsigned char* pToBinaries, int bytesToShow,  HANDLE console ) {
 	unsigned char string [1024];
     int wh=0;
-	const int symbolsPerString = 6;
+	const int symbolsPerString = 8;
 	int wholeStrings= bytesToShow / symbolsPerString;
 
 	//a) calculate remainder
@@ -92,7 +95,7 @@ void plotBinaryBlockOfSymbolsAsString (unsigned char* pToBinaries, int bytesToSh
 		for ( wh=0; wh < wholeStrings; wh++) {
 			//1) plot number
 			setTextToMagenta(console);
-			printf("%d ", wh);
+			printf("%02d ", wh);
 			setTextToGreen(console);
 			//2)plot string into buffer
 			writeStringOfBinaries(pToBinaries,string,symbolsPerString);
@@ -104,14 +107,52 @@ void plotBinaryBlockOfSymbolsAsString (unsigned char* pToBinaries, int bytesToSh
 			memset(string, 0, 1024);
 		}
 	//c) plot a reminder :
-	//1)number
-	setTextToMagenta(console);
-			printf("%d ", wh);
-	setTextToGreen(console);
+	if (remainder) {
+			//1)number
+			setTextToMagenta(console);
+			printf("%02d ", wh);
+			setTextToGreen(console);
 	//2)plot to a buffer
-	writeStringOfBinaries(pToBinaries, string, remainder);
+			writeStringOfBinaries(pToBinaries, string, remainder);
 	//3) plot it in a console
-	printf("%s \n",string );
+			printf("%s \n",string );
+	}
+
+}
+
+
+void plotToFileBinaryBlockOfSymbolsAsString (FILE** fOutFile,unsigned char* pToBinaries, int bytesToShow ) {
+	unsigned char string [2048];
+    int wh=0;
+	const int symbolsPerString = 8;
+	int wholeStrings= bytesToShow / symbolsPerString;
+
+	//a) calculate remainder
+	int remainder = bytesToShow % symbolsPerString;
+	//b)plot whole strings firstly
+		for ( wh=0; wh < wholeStrings; wh++) {
+			//1) plot number
+			
+			fprintf(*fOutFile,"%02d ", wh);
+			//2)plot string into buffer
+			writeStringOfBinaries(pToBinaries,string,symbolsPerString);
+			//3) add pointer string of length
+			pToBinaries += symbolsPerString;
+			//4)plot a string
+			fprintf(*fOutFile, "%s \n", string );
+			//5)clear an array 
+			memset(string, 0, 1024);
+		}
+	//c) plot a reminder :
+	if (remainder) {
+			//1)number
+			fprintf(*fOutFile, "%02d ", wh);
+	//2)plot to a buffer
+			writeStringOfBinaries(pToBinaries, string, remainder);
+	//3) plot it in a console
+			fprintf(*fOutFile, "%s \n",string );
+	}
+
 }
 
 
@@ -154,11 +195,17 @@ void readAndShowChunk (FILE* fPointer, int chunkSize, int fileLength) {
   numOfChunk = fileLength / chunkSize;	
 }
 
-int readAndShowFullFile (FILE** fPointer, HANDLE console, int fileSize, int numbSymbPerView) {
-	int numberOfChunks, remainder, chunkNumber;
+int readAndShowFullFile (FILE** fPointer, HANDLE console,  int numbSymbPerView) {
+     unsigned char binBuffer[4096];
+	int numberOfChunks, remainder, chunkNumber, fileSize;
+	//read size of file
+	fseek(*fPointer,0,SEEK_END);
+	fileSize = ftell(*fPointer);
+	fseek(*fPointer,0,SEEK_SET);
+	//amount of chunks of data
 	numberOfChunks = fileSize / numbSymbPerView;
 	remainder = fileSize % numbSymbPerView;
-	unsigned char binBuffer[1024];
+	printf ("\n \n");
 	//show  whole chunks
 	for (int x=0; x < numberOfChunks; x++) {
 		//plot number of string 
@@ -182,9 +229,45 @@ int readAndShowFullFile (FILE** fPointer, HANDLE console, int fileSize, int numb
 	return 1;
 }
 
+
+int readAndConvertFullFile (FILE** fPointer, FILE** fDest,  int numbSymbPerView) {
+     unsigned char binBuffer[4096];
+	int numberOfChunks, remainder, chunkNumber, fileSize;
+	//read size of file
+	fseek(*fPointer,0,SEEK_END);
+	fileSize = ftell(*fPointer);
+	fseek(*fPointer,0,SEEK_SET);
+	//amount of chunks of data
+	numberOfChunks = fileSize / numbSymbPerView;
+	remainder = fileSize % numbSymbPerView;
+	
+	//show  whole chunks
+	for (int x=0; x < numberOfChunks; x++) {
+		//plot number of string 
+
+		fprintf(*fDest,"Page: %d \n", x);
+		//read chunk from HDD
+		fread(binBuffer,numbSymbPerView,1,*fPointer);
+		//plot a block
+	plotToFileBinaryBlockOfSymbolsAsString (fDest, binBuffer, numbSymbPerView );
+	}
+	//are there any remainder?
+	if (remainder) {
+			//plot number of string 
+		
+		fprintf(*fDest, "Page: L A S T  \n");
+		//read chunk from HDD
+		fread (binBuffer, remainder, 1, *fPointer);
+	    //plot a block
+		 plotToFileBinaryBlockOfSymbolsAsString (fDest, binBuffer, remainder);
+	}
+	return 1;
+}
+
+
 int readDisplayDown (FILE** fPointer, HANDLE console, int fileSize, int chunkSize) {
 	COORD crd;
-	int pageNun; 
+	int pageNum; 
 	unsigned char binBuffer[1024];
 	//a)has the last chunk been acheived?
 	//1)read current position
@@ -199,7 +282,7 @@ int readDisplayDown (FILE** fPointer, HANDLE console, int fileSize, int chunkSiz
 		//there is the last chuk - less that given chunkSize,
 		//so, show the last chunk
 		//a) number of page (chunk)
-	    pageNun = currPos / chunkSize;
+	    pageNum = currPos / chunkSize;
 		//b)show it
 		crd.X = 3;
 		crd.Y = 3;
@@ -209,11 +292,11 @@ int readDisplayDown (FILE** fPointer, HANDLE console, int fileSize, int chunkSiz
 		//c)read a last chunk from HDD
 		fread (binBuffer, (fileSize - currPos), 1, *fPointer);
 		//d) show it 
-		plotBinaryBlockOfSymbols(binBufer, (fileSize - currPos),5,console);
+		plotBinaryBlockOfSymbols(binBuffer, (fileSize - currPos),5,console);
 		return 0;
 	}
 	//4)read non-last chunk
-	pageNun =  currPos / chunkSize;
+	pageNum =  currPos / chunkSize;
 	//b)show it
 	crd.X = 3;
 	crd.Y = 3;
@@ -223,7 +306,7 @@ int readDisplayDown (FILE** fPointer, HANDLE console, int fileSize, int chunkSiz
 	//c)read a last chunk from HDD
 	fread (binBuffer, chunkSize, 1, *fPointer);
 	//d)show it
-	plotBinaryBlockOfSymbols(binBufer, chunkSize, 5, console);
+	plotBinaryBlockOfSymbols(binBuffer, chunkSize, 5, console);
 	return 0;
 }
 

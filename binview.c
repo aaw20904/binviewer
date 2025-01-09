@@ -27,19 +27,26 @@ const char symbols []={0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0x
 
 int main (int argc, char *argv[]) {
 	FILE* pToFile = NULL;
+	FILE* pOutputFile = NULL;
 	int fileSize;
 	unsigned char charCode1, charCode2;
 	unsigned char* cPtr = buffer;
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	int nameOfPage = 0;
-     if (openFilePrompt(&pToFile, &fileSize ,  consoleHandle) == 0) {
+     if (openFilePrompt(&pToFile, &fileSize ,  consoleHandle) == 0) { 
+        pOutputFile = fopen("outtext.txt","wb");
+	    //readAndShowFullFile(&pToFile,consoleHandle,128);
+	    readAndConvertFullFile (&pToFile, &pOutputFile, 128);
      	fclose(pToFile);
-     	return -1;
+     	fclose(pOutputFile);
 	 }
+	 printf("\n Press 'Esc' to exit..");
+	
 	//setTextToGreen(consoleHandle);
     //convertBinariesIntoBlock(symbols, buffer, 3, 3);
     //plotBinaryBlockOfSymbols(symbols, 20, 2, consoleHandle);
     ///loop of reading 
+    
     while(1){
     	//red the first byte
     	charCode1 = _getch();

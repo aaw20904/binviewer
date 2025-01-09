@@ -10,4 +10,6 @@ void plotBinaryBlockOfSymbols (unsigned char* pToBinaries, int bytesToShow, int 
 int readDisplayUp (FILE** fPointer, HANDLE console, int fileSize, int chunkSize);
 int readDisplayDown (FILE** fPointer, HANDLE console, int fileSize, int chunkSize);
 void plotBinaryBlockOfSymbolsAsString (unsigned char* pToBinaries, int bytesToShow,  HANDLE console );
-int readAndShowFullFile (FILE** fPointer, HANDLE console, int fileSize, int numbSymbPerView);
+int readAndShowFullFile (FILE** fPointer, HANDLE console,  int numbSymbPerView);
+void plotToFileBinaryBlockOfSymbolsAsString (FILE** fOutFile,unsigned char* pToBinaries, int bytesToShow);
+int readAndConvertFullFile (FILE** fPointer, FILE** fDest,  int numbSymbPerView);
