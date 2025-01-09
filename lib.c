@@ -80,6 +80,40 @@ void plotBinaryBlockOfSymbols (unsigned char* pToBinaries, int bytesToShow, int 
 	printf("%s \n",string );
 }
 
+void plotBinaryBlockOfSymbolsAsString (unsigned char* pToBinaries, int bytesToShow,  HANDLE console ) {
+	unsigned char string [1024];
+    int wh=0;
+	const int symbolsPerString = 6;
+	int wholeStrings= bytesToShow / symbolsPerString;
+
+	//a) calculate remainder
+	int remainder = bytesToShow % symbolsPerString;
+	//b)plot whole strings firstly
+		for ( wh=0; wh < wholeStrings; wh++) {
+			//1) plot number
+			setTextToMagenta(console);
+			printf("%d ", wh);
+			setTextToGreen(console);
+			//2)plot string into buffer
+			writeStringOfBinaries(pToBinaries,string,symbolsPerString);
+			//3) add pointer string of length
+			pToBinaries += symbolsPerString;
+			//4)plot a string
+			printf("%s \n",string );
+			//5)clear an array 
+			memset(string, 0, 1024);
+		}
+	//c) plot a reminder :
+	//1)number
+	setTextToMagenta(console);
+			printf("%d ", wh);
+	setTextToGreen(console);
+	//2)plot to a buffer
+	writeStringOfBinaries(pToBinaries, string, remainder);
+	//3) plot it in a console
+	printf("%s \n",string );
+}
+
 
 int openFilePrompt(FILE** fPointer, int* pFileSize, HANDLE console){
 	//move a cursor into a specific position:
@@ -120,6 +154,95 @@ void readAndShowChunk (FILE* fPointer, int chunkSize, int fileLength) {
   numOfChunk = fileLength / chunkSize;	
 }
 
+int readAndShowFullFile (FILE** fPointer, HANDLE console, int fileSize, int numbSymbPerView) {
+	int numberOfChunks, remainder, chunkNumber;
+	numberOfChunks = fileSize / numbSymbPerView;
+	remainder = fileSize % numbSymbPerView;
+	unsigned char binBuffer[1024];
+	//show  whole chunks
+	for (int x=0; x < numberOfChunks; x++) {
+		//plot number of string 
+		setTextToMagenta(console);
+		printf("Page: %d \n", x);
+		//read chunk from HDD
+		fread(binBuffer,numbSymbPerView,1,*fPointer);
+		//plot a block
+		plotBinaryBlockOfSymbolsAsString (binBuffer, numbSymbPerView, console );
+	}
+	//are there any remainder?
+	if (remainder) {
+			//plot number of string 
+		setTextToMagenta(console);
+		printf("Page: L A S T  \n");
+		//read chunk from HDD
+		fread (binBuffer, remainder, 1, *fPointer);
+	    //plot a block
+		plotBinaryBlockOfSymbolsAsString (binBuffer, remainder, console );
+	}
+	return 1;
+}
+
+int readDisplayDown (FILE** fPointer, HANDLE console, int fileSize, int chunkSize) {
+	COORD crd;
+	int pageNun; 
+	unsigned char binBuffer[1024];
+	//a)has the last chunk been acheived?
+	//1)read current position
+	int currPos = ftell(*fPointer);
+	//2)is it the end?
+	if (currPos == fileSize) {
+		//when end - return code -1
+		return -1;
+	}
+	//3)Is it the last chunk?
+	if ((fileSize - currPos) <= chunkSize) {
+		//there is the last chuk - less that given chunkSize,
+		//so, show the last chunk
+		//a) number of page (chunk)
+	    pageNun = currPos / chunkSize;
+		//b)show it
+		crd.X = 3;
+		crd.Y = 3;
+		SetConsoleCursorPosition(console, crd);
+		setTextToMagenta(console);
+		printf("Page: %d",pageNum);
+		//c)read a last chunk from HDD
+		fread (binBuffer, (fileSize - currPos), 1, *fPointer);
+		//d) show it 
+		plotBinaryBlockOfSymbols(binBufer, (fileSize - currPos),5,console);
+		return 0;
+	}
+	//4)read non-last chunk
+	pageNun =  currPos / chunkSize;
+	//b)show it
+	crd.X = 3;
+	crd.Y = 3;
+	SetConsoleCursorPosition(console, crd);
+	setTextToMagenta(console);
+	printf("Page: %d",pageNum);
+	//c)read a last chunk from HDD
+	fread (binBuffer, chunkSize, 1, *fPointer);
+	//d)show it
+	plotBinaryBlockOfSymbols(binBufer, chunkSize, 5, console);
+	return 0;
+}
+
+int readDisplayUp (FILE** fPointer, HANDLE console, int fileSize, int chunkSize) {
+
+ 	COORD crd;
+	int pageNun; 
+	unsigned char binBuffer[1024];
+    
+    //1)read current position
+	int currPos = ftell(*fPointer);
+	//is it the begin of a file?
+	if (currPos == 0) {
+		//when begin-exit
+		return -1;
+	}
+	
+
+}
 
 void setTextToGreen(HANDLE console) {
 	 SetConsoleTextAttribute(console, 0x0002);

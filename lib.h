@@ -7,3 +7,7 @@ void setTextToRed (HANDLE console);
 void setTextToWhite (HANDLE console);
 int openFilePrompt (FILE** fPointer, int* pFileSize, HANDLE console);
 void plotBinaryBlockOfSymbols (unsigned char* pToBinaries, int bytesToShow, int startRow, HANDLE console );
+int readDisplayUp (FILE** fPointer, HANDLE console, int fileSize, int chunkSize);
+int readDisplayDown (FILE** fPointer, HANDLE console, int fileSize, int chunkSize);
+void plotBinaryBlockOfSymbolsAsString (unsigned char* pToBinaries, int bytesToShow,  HANDLE console );
+int readAndShowFullFile (FILE** fPointer, HANDLE console, int fileSize, int numbSymbPerView);

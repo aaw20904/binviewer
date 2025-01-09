@@ -34,10 +34,11 @@ int main (int argc, char *argv[]) {
 	int nameOfPage = 0;
      if (openFilePrompt(&pToFile, &fileSize ,  consoleHandle) == 0) {
      	fclose(pToFile);
+     	return -1;
 	 }
-	setTextToGreen(consoleHandle);
-    convertBinariesIntoBlock(symbols, buffer, 3, 3);
-    plotBinaryBlockOfSymbols(symbols, 20, 2, consoleHandle);
+	//setTextToGreen(consoleHandle);
+    //convertBinariesIntoBlock(symbols, buffer, 3, 3);
+    //plotBinaryBlockOfSymbols(symbols, 20, 2, consoleHandle);
     ///loop of reading 
     while(1){
     	//red the first byte
@@ -49,7 +50,7 @@ int main (int argc, char *argv[]) {
 			//what is the special symbol?
 			switch (charCode2) {
 				case 72:
-				// cussor_up
+				//cussor_up
 				   
 				break;
 				case 80:
