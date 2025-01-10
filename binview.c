@@ -4,7 +4,8 @@
 //author : Andrii Androsowych
  #include "lib.h"
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
-char buffer [1024]={0};
+unsigned char buffer [1024]={0};
+unsigned char stringBuffer[4096]={0};
 const char symbols []={0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x10,
 					   0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,
 					   0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,
@@ -34,11 +35,12 @@ int main (int argc, char *argv[]) {
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	int nameOfPage = 0;
      if (openFilePrompt(&pToFile, &fileSize ,  consoleHandle) == 0) { 
-        pOutputFile = fopen("outtext.txt","wb");
+        //pOutputFile = fopen("outtext.txt","wb");
 	    //readAndShowFullFile(&pToFile,consoleHandle,128);
-	    readAndConvertFullFile (&pToFile, &pOutputFile, 128);
+	    //readAndConvertFullFile (&pToFile, &pOutputFile, 128);
+	  readAndShowOneChunk (&pToFile,consoleHandle,256,0,buffer,stringBuffer);
      	fclose(pToFile);
-     	fclose(pOutputFile);
+     //	fclose(pOutputFile);
 	 }
 	 printf("\n Press 'Esc' to exit..");
 	

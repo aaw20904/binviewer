@@ -13,3 +13,5 @@ void plotBinaryBlockOfSymbolsAsString (unsigned char* pToBinaries, int bytesToSh
 int readAndShowFullFile (FILE** fPointer, HANDLE console,  int numbSymbPerView);
 void plotToFileBinaryBlockOfSymbolsAsString (FILE** fOutFile,unsigned char* pToBinaries, int bytesToShow);
 int readAndConvertFullFile (FILE** fPointer, FILE** fDest,  int numbSymbPerView);
+void readAndShowOneChunk (FILE** fPointer, HANDLE console, int chunkSize, int offset, unsigned char* binBuffer, unsigned char * stringBuffer );
+void plotBinaryBlockOfSymbolsEx (unsigned char* pToBinaries, int bytesToShow, int startRow, unsigned char* symBuf, HANDLE console );
